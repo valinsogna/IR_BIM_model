@@ -1,8 +1,8 @@
 # Structure of dataset
 
 * ***cran.all***: the documents (1400) in the original format.
-* ***cran.qry***: the queries (365).
-* ***cranqrel***: the relevance assesments (for first 225 query). They are in three columns:  $1^{st}$ query number, $2^{nd}$ the relevant document number, and the $3{rd}$ is the relevancy code.
+* ***cran.qry***: the queries (225).
+* ***cranqrel***: the relevance assesments. They are in three columns:  $1^{st}$ query number, $2^{nd}$ the relevant document number, and the $3{rd}$ is the relevancy code.
 * ***readme***: some attempt at explanation especially about the relevance judgements.
 
 ## Original format
@@ -11,7 +11,7 @@ Tags definitions :
 - ***.T*** : Document title
 - ***.A*** : Document author(s)
 - ***.B*** : Bibliography
-- ***.W*** : Main document content (the article Abstract)
+- ***.W*** : Main document content (the article Abstract) -> contains also the title!
 
 ### Sample of original Cranfield document
 ```
