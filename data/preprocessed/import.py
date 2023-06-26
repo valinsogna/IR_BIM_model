@@ -86,7 +86,7 @@ def import_relevance(PATH_TO_FILE):
   relevance = defaultdict(set)
   for row in cran_np:
     if row[3] == 1:
-      relevance[row[0]].add(row[2])
+      relevance[row[0]-1].add(row[2]-1) # -1 because the IDs for queries and docs start from 1
     
   return relevance
 
