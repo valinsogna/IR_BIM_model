@@ -10,12 +10,12 @@ Evaluation of the effectiveness of the system is performed on a set of test quer
 - mean average precision for a set of queries.
 - R-precision of the top R ranked documents for a query.
 
-## Dataset used
+## Dataset
 
 The dataset used is the [Cranfield](http://ir.dcs.gla.ac.uk/resources/test_collections/cran/) which is a standard Information Retrieval text collection, consisting of 1400 documents (1.6 MB) from the aerodynamics field, in SGLM format. 
 The collection contains 225 queries with relevance feedback.
 
-## Packages used
+## Python Packages
 
 - [NLTK](https://www.nltk.org/) for text processing.
 - [NumPy](https://numpy.org/) for numerical operations.
