@@ -1,63 +1,69 @@
+from collections import defaultdict
+import numpy as np
 import re
-from collections import defaultdict, OrderedDict
 import pickle
 
 PATH_TO_CRAN_TXT = '../cran/cran.all.1400'
 PATH_TO_CRAN_QRY = '../cran/cran.qry'
 PATH_TO_CRAN_REL = '../cran/cranqrel'
 
+# Regex to split the text into chuncks at the start of the marker
+I_marker = re.compile('\.I.')# for articles and queries
+ABTW_marker = re.compile('\.[A,B,T,W]')# for articles
+W_marker = re.compile('\.[W]') # for queries
 
-def import_dataset():
-    """
-    This function imports all the articles in the Cranfield collection,
-    returning list of lists where each sub-list contains all the
-    terms (from .T and .W tags) present in each article as a string.
-    """
+def import_data(PATH_TO_FILE, marker_docId):
+  """
+  Reads the file and splits the text into entries at the ID marker '.I'.
+  The first entry is empty, so it is removed.
 
-    # Saves the articles in a list of lists, where each sub-list is created after a .I row and it contains all the terms inside .T and .W tags.
-    articles = []
-    with open('../cran/cran.all.1400', 'r') as f:
-        tmp = []
-        for row in f:
-            if row.startswith(".I"):
-                if tmp != []:
-                    articles.append(tmp)
-                tmp = []
-            elif row.startswith(".W"):
-                continue
-            elif row.startswith(".T"):
-                continue
-            else:
-                #If row starts with .A or .B don't add the folowing lines to the tmp list
-                if row.startswith(".A") or row.startswith(".B"):
-                    continue
-                row = re.sub(r'[^a-zA-Z\s]+', '', row) # removes all the non-alphabetic characters
-                tmp += row.split()
-        articles.append(tmp)   
-    return articles
+  Input:
+    PATH_TO_FILE: path to the file to be read
+    marker_docId: regex at which we want to split the text
+  Output:
+    lines: list of strings, each string is an entry of the file
 
+  """
+  lines = []
+  try:
+    with open (PATH_TO_FILE,'r') as f:
+      text = f.read().replace('\n'," ")
+      lines = re.split(marker_docId,text)
+      lines.pop(0) # removes the first empty entry
 
-def import_queries():
-    """
-    This function imports all the queries in the Cranfield test collection,
-    returning list of lists where each sub-list contains all the
-    terms present in each query as a string.
-    """
-    queries = []
-    with open('../cran/cran.qry', 'r') as f:
-        tmp = []
-        for row in f:
-            if row.startswith(".I"):
-                if tmp != []:
-                    queries.append(tmp)
-                tmp = []
-            elif row.startswith(".W"):
-                continue
-            else:
-                row = re.sub(r'[^a-zA-Z\s]+', '', row) 
-                tmp += row.split()
-        queries.append(tmp)
-    return queries
+  except:
+      print("File doesn't exist")
+      
+  return lines
+ 
+
+def get_text_only(doc, marker_text):
+  """
+    This function takes as input a list of strings, each string is an entry of the file.
+    It splits the text into chunks at the start of each tag, and saves only the entries
+    included in the .W tag. Then it removes non-alphabetic characters and non-whitespace
+    characters from the text. Finally, it splits the text into words removing the whitespaces.
+    It returns a list of lists containing the text in articles.
+
+  """
+  doc_tokens = []
+  for line in doc:
+    #Split the text into chunks at the start of each tag
+    entries= re.split(marker_text,line) 
+    #Save only entries included in .W tag
+    text = entries[4 if len(entries) > 2 else 1]
+    #Remove non-alphabetic characters nd non-whitespace characters from text
+    text = re.sub(r'[^a-zA-Z\s]+', '', text)
+    #text = text.lower() # convert to lowercase
+    #For each id, append a list of lists containing the text in articles
+    doc_tokens.append(text.split()) # split the text into words removing the whitespaces
+  return doc_tokens
+
+txt_list = import_data(PATH_TO_CRAN_TXT, I_marker)
+qry_list = import_data(PATH_TO_CRAN_QRY, I_marker)
+
+articles = get_text_only(txt_list, ABTW_marker)
+queries = get_text_only(qry_list, W_marker)
 
 
 def import_relevance():
