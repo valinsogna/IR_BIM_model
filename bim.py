@@ -1,10 +1,6 @@
-from collections import defaultdict, OrderedDict
-from math import log, sqrt
-import re
-from nltk.corpus import stopwords
-from nltk.stem import PorterStemmer
+from math import log 
 import pickle
-from functions import *
+from utils.functions import *
 
 class BIM():
     """
@@ -211,12 +207,12 @@ class BIM():
 
 
 
-# with open("Data/articles.pkl", "rb") as f:
-#     articles = pickle.load(f)
+with open("data/preprocessed/articles.pkl", "rb") as f:
+    articles = pickle.load(f)
 
-# bim=BIM(articles)
+bim=BIM(articles)
 
-# with open("Data/bim.pkl",'wb') as f:
-#     pickle.dump(bim,f)
+with open("data/bim.pkl",'wb') as f:
+    pickle.dump(bim,f)
 
 
