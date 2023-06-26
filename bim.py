@@ -212,7 +212,7 @@ with open("data/preprocessed/articles.pkl", "rb") as f:
 
 bim=BIM(articles)
 
-with open("data/bim.pkl",'wb') as f:
+with open("./index.pkl",'wb') as f:
     pickle.dump(bim,f)
 
 
