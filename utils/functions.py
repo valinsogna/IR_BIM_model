@@ -64,6 +64,7 @@ def make_list_query(query):
     containing all the terms present in the query as a string.
     """
     query=re.sub(r'[^a-zA-Z\s]+', '',query)
+    query = query.casefold()
     list=query.split()
     return list
 

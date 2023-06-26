@@ -2,6 +2,11 @@ from collections import defaultdict
 import numpy as np
 import re
 import pickle
+import string
+# To use nltk, install databases on your machine
+import nltk
+nltk.download('punkt')
+from nltk.tokenize import word_tokenize
 
 PATH_TO_CRAN_TXT = '../cran/cran.all.1400'
 PATH_TO_CRAN_QRY = '../cran/cran.qry'
@@ -11,6 +16,8 @@ PATH_TO_CRAN_REL = '../cran/cranqrel_bin.txt'
 I_marker = re.compile('\.I.')# for articles and queries
 ABTW_marker = re.compile('\.[A,B,T,W]')# for articles
 W_marker = re.compile('\.[W]') # for queries
+
+punctuation = set(string.punctuation)
 
 def import_data(PATH_TO_FILE, marker_docId):
   """
@@ -40,7 +47,7 @@ def import_data(PATH_TO_FILE, marker_docId):
 def get_text_only(doc, marker_text):
   """
     Splits the text into chunks at the start of each tag, and saves only the entries included in the '.W' tag. 
-    Then it removes non-alphabetic characters and non-whitespace.
+    Then it removes punctuation, divide strings by char '-' and converts the text to lowercase.
 
     Input:
       doc: list of strings, each string is an entry of the file
@@ -55,8 +62,12 @@ def get_text_only(doc, marker_text):
     #Save only entries included in .W tag
     text = entries[4 if len(entries) > 2 else 1]
     #Remove non-alphabetic characters nd non-whitespace characters from text
-    text = re.sub(r'[^a-zA-Z\s]+', '', text)
-    #text = text.lower() # convert to lowercase
+    #text = re.sub(r'[^a-zA-Z\s]+', '', text)
+    #Remove punctuation from text
+    for term in word_tokenize(text):
+      term.casefold() #lowercase, more aggressive that lower() (e.g. ß -> ss)
+      if term in punctuation:
+        text = text.replace(term, '')
     #For each id, append a list of lists containing the text in articles
     doc_tokens.append(text.split()) # split the text into words removing the whitespaces
   return doc_tokens
