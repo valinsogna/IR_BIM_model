@@ -1,9 +1,10 @@
 # Structure of dataset
 
-* ***cran.all***: the documents (1400) in the original format.
-* ***cran.qry***: the queries (225).
-* ***cranqrel***: the relevance assesments. They are in three columns:  $1^{st}$ query number, $2^{nd}$ the relevant document number, and the $3{rd}$ is the relevancy code.
-* ***readme***: some attempt at explanation especially about the relevance judgements.
+* **`cran.all`**: the documents (1400) in the original format.
+* **`cran.qry`**: the queries (225).
+* **`cranqrel`**: the relevance assesments. They are in three columns:  $1^{st}$ query number, $2^{nd}$ the relevant document number, and the $3{rd}$ is the relevancy code.
+* **`cranqrel_bin`**: the binary relevance assesments in TREC format. They are in four columns:  $1^{st}$ query number, $2^{nd}$ iteration (always zero), $3^{rd}$ the relevant document number, and the $4{th}$ is the relevancy code (0 or 1).
+* **`readme`**: some attempt at explanation especially about the relevance judgements.
 
 ## Original format
 Tags definitions :
@@ -48,17 +49,18 @@ In the original Cranfield collection, relevance judgments were made in 5 levels 
 | 4 | References which are a complete answer to the question. | 363 | 19.8% |
 
 :warning: This way of assessing relevance was aborted in TREC campaings as detailed in the following reference :
-
 *Voorhees, Ellen M.* "The philosophy of information retrieval evaluation." Workshop of the cross-language evaluation forum for european languages. Springer, Berlin, Heidelberg, 2001.
 
-[PDF paper](https://www.inf.ed.ac.uk/teaching/courses/tts/handouts2017/VoorheesIREvaluation.pdf)
+Hence, we consider the new format of a Qrels file as follows: all initial relevancies having the scores **1, 2, 3, or 4** are considered as relevant (**all replaced with 1 value**) in the new formatted Cranfield collection. However, **-1 non relavant** initial assessments are **replaced with 0**.
 
->"The vast majority of test collection experiments since then have also assumed that relevance is a **binary choice**, though the original Cranfield experiments used a five-point relevance scale."
+The file `cranqrel_bin` is in TREC format of a Qrels file as follows:
 
-[...]
+| TOPIC | ITERATION | DOCNO | RELEVANCY |
+|:---:|---|:---:|:---:|
 
->"TREC has almost always used binary relevance judgments either a document is relevant to the topic or it is not. To define relevance for the assessors, the assessors are told to assume that they are writing a report on the subject of the topic statement. If they would use any information contained in the document in the report, then the (entire) document should be marked relevant, otherwise it should be marked irrelevant. The assessors are instructed to judge a document as relevant regardless of the number of other documents that contain the same information."
+Where :
+ - **TOPIC** is the topic (query) number,
+ - **ITERATION** is the feedback iteration (almost always zero and not used)
+ - **DOCNO** is the official document number that corresponds to the "docno" field in the documents, and
+ - **RELEVANCY** is a binary code of 0 for not relevant and 1 for relevant.
 
-Hence, we consider the new format of a Qrels file as follows:
-
-:white_check_mark: All initial relevancies having the scores **1, 2, 3, or 4** are considered as relevant (**all replaced with 1 value**) in the new formatted Cranfield collection. However, **-1 non relavant** initial assessments are **replaced with 0**.

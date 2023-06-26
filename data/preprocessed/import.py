@@ -5,7 +5,7 @@ import pickle
 
 PATH_TO_CRAN_TXT = '../cran/cran.all.1400'
 PATH_TO_CRAN_QRY = '../cran/cran.qry'
-PATH_TO_CRAN_REL = '../cran/cranqrel'
+PATH_TO_CRAN_REL = '../cran/cranqrel_bin.txt'
 
 # Regex to split the text into chuncks at the start of the marker
 I_marker = re.compile('\.I.')# for articles and queries
@@ -65,26 +65,14 @@ def get_text_only(doc, marker_text):
 def import_relevance(PATH_TO_FILE):
   """
   Imports all the relevant articles for each query, returning a dictionary.
-  The keys are the IDs (numbers) of the queries and the values are tuples containing docIDs of the relevant documents to that query along with the degrees of relevance.
+  The keys are the IDs (numbers) of the queries and the values are the docIDs only 
+  of the relevant documents to that query (aka the one with forth column value 1).
   It is used to give user feedback in the relevance feedback.
 
   Input:
     PATH_TO_FILE: path to the file to be read
   Output:
     relevance: dictionary
-
-  The degrees are defined by Cleverdon as follows:
-    1.  References which are a complete answer to the question.
-    2.  References of a high degree of relevance, the lack of which
-        either would have made the research impracticable or would
-        have resulted in a considerable amount of extra work.
-    3.  References which were useful, either as general background
-        to the work or as suggesting methods of tackling certain aspects
-        of the work.
-    4.  References of minimum interest, for example, those that have been
-        included from an historical viewpoint.
-    5.  References of no interest.
-    P.S. Obviously no 5's are included in the qrels.
   """
   cran_rel_data = None
 
@@ -97,7 +85,8 @@ def import_relevance(PATH_TO_FILE):
 
   relevance = defaultdict(set)
   for row in cran_np:
-    relevance[row[0]].add(tuple(row[1:]))
+    if row[3] == 1:
+      relevance[row[0]].add(row[2])
     
   return relevance
 
