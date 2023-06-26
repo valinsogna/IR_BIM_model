@@ -11,7 +11,7 @@ Tags definitions :
 - ***.T*** : Document title
 - ***.A*** : Document author(s)
 - ***.B*** : Bibliography
-- ***.W*** : Main document content (the article Abstract) -> contains also the title!
+- ***.W*** : Main document content (the article Abstract) -> **contains also the title!**
 
 ### Sample of original Cranfield document
 ```
