@@ -39,12 +39,14 @@ def import_data(PATH_TO_FILE, marker_docId):
 
 def get_text_only(doc, marker_text):
   """
-    This function takes as input a list of strings, each string is an entry of the file.
-    It splits the text into chunks at the start of each tag, and saves only the entries
-    included in the .W tag. Then it removes non-alphabetic characters and non-whitespace
-    characters from the text. Finally, it splits the text into words removing the whitespaces.
-    It returns a list of lists containing the text in articles.
+    Splits the text into chunks at the start of each tag, and saves only the entries included in the '.W' tag. 
+    Then it removes non-alphabetic characters and non-whitespace.
 
+    Input:
+      doc: list of strings, each string is an entry of the file
+      marker_text: regex at which we want to split the text
+    Output:
+      doc_tokens: list of lists, each list contains the text of an entry of the file
   """
   doc_tokens = []
   for line in doc:
@@ -59,39 +61,59 @@ def get_text_only(doc, marker_text):
     doc_tokens.append(text.split()) # split the text into words removing the whitespaces
   return doc_tokens
 
+
+def import_relevance(PATH_TO_FILE):
+  """
+  Imports all the relevant articles for each query, returning a dictionary.
+  The keys are the IDs (numbers) of the queries and the values are tuples containing docIDs of the relevant documents to that query along with the degrees of relevance.
+  It is used to give user feedback in the relevance feedback.
+
+  Input:
+    PATH_TO_FILE: path to the file to be read
+  Output:
+    relevance: dictionary
+
+  The degrees are defined by Cleverdon as follows:
+    1.  References which are a complete answer to the question.
+    2.  References of a high degree of relevance, the lack of which
+        either would have made the research impracticable or would
+        have resulted in a considerable amount of extra work.
+    3.  References which were useful, either as general background
+        to the work or as suggesting methods of tackling certain aspects
+        of the work.
+    4.  References of minimum interest, for example, those that have been
+        included from an historical viewpoint.
+    5.  References of no interest.
+    P.S. Obviously no 5's are included in the qrels.
+  """
+  cran_rel_data = None
+
+  try:
+    cran_rel_data = open(PATH_TO_FILE, 'r')
+  except:
+    print("File doesn't exist")
+
+  cran_np = np.loadtxt(cran_rel_data, dtype=int)
+
+  relevance = defaultdict(set)
+  for row in cran_np:
+    relevance[row[0]].add(tuple(row[1:]))
+    
+  return relevance
+
+
 txt_list = import_data(PATH_TO_CRAN_TXT, I_marker)
 qry_list = import_data(PATH_TO_CRAN_QRY, I_marker)
 
 articles = get_text_only(txt_list, ABTW_marker)
 queries = get_text_only(qry_list, W_marker)
+relevance = import_relevance(PATH_TO_CRAN_REL)
 
+with open("articles.pkl",'wb') as f:
+    pickle.dump(articles,f)
 
-def import_relevance():
-    """
-    This function imports all the relevant articles for each query 
-    of the Cranfiled test collection, returning a dictionary in 
-    which the keys are the IDs (numbers) of the queries and 
-    the values are the docIDs of the relevant documents to that query.
-    It is used to give user feedback in the relevance feedback.
-    """
-    relevance=defaultdict(set)
-    with open('../cran/cranqrel', 'r') as f:
-        for row in f:
-            tmp=re.split(r"\s+", row)
-            relevance[int(tmp[0])-1].add(int(tmp[2])-1)
-    return relevance
+with open("queries.pkl",'wb') as f:
+    pickle.dump(queries,f)
 
-
-# articles=import_dataset()
-# queries=import_queries()
-# relevance=import_relevance()
-
-# with open("Data/articles.pkl",'wb') as f:
-#     pickle.dump(articles,f)
-
-# with open("Data/queries.pkl",'wb') as f:
-#     pickle.dump(queries,f)
-
-# with open("Data/relevance.pkl",'wb') as f:
-#     pickle.dump(relevance,f)
-
+with open("relevance.pkl",'wb') as f:
+    pickle.dump(relevance,f)
