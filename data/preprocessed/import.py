@@ -70,8 +70,10 @@ def get_text_only(txt_list, marker_text):
 
       # Tokenize the text and remove non-alphabetical characters and empty strings and punctuation from tokens
       tokens = [re.sub(r'[^a-z]', '', word) for word in word_tokenize(text_content) if word not in punctuation]
-      # Remove empty strings from tokens
-      tokens = list(filter(None, tokens))
+      # Remove empty strings and 1 and 2 characters strings from tokens usigna regex:
+      #tokens = [re.sub(r'^.{1,2}$', '', word) for word in tokens]
+      tokens = [re.sub(r'^.{1}$', '', word) for word in tokens]
+      #tokens = list(filter(None, tokens))
       docs_tokens.append(tokens)
 
   return docs_tokens
