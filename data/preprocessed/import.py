@@ -14,7 +14,7 @@ PATH_TO_CRAN_REL = '../cran/cranqrel_bin.txt'
 
 # Regex to split the text into chuncks at the start of the marker
 I_marker = re.compile('\.I.')# for articles and queries
-ABTW_marker = re.compile('\.[A,B,T,W]')# for articles
+ABTW_marker = re.compile('\.[ABTW]')# for articles
 W_marker = re.compile('\.[W]') # for queries
 
 punctuation = set(string.punctuation)
@@ -44,33 +44,37 @@ def import_data(PATH_TO_FILE, marker_docId):
   return lines
  
 
-def get_text_only(doc, marker_text):
+def get_text_only(txt_list, marker_text):
   """
-    Splits the text into chunks at the start of each tag, and saves only the entries included in the '.W' tag. 
-    Then it removes punctuation, divide strings by char '-' and converts the text to lowercase.
+    It removes punctuation, divide strings by char '-', converts the text to lowercase and removes non alphabetical characters.
+    It returns a list of lists, each list contains the text content (the one inside .W tag) of an entry of the file txt_list.
 
     Input:
-      doc: list of strings, each string is an entry of the file
+      txt_list: list of strings, each string is an entry of the file.
       marker_text: regex at which we want to split the text
     Output:
-      doc_tokens: list of lists, each list contains the text of an entry of the file
+      doc_tokens: list of list of tokens for each article. Each token is a lowercase string and punctuation is removed.
   """
-  doc_tokens = []
-  for line in doc:
-    #Split the text into chunks at the start of each tag
-    entries= re.split(marker_text,line) 
-    #Save only entries included in .W tag
-    text = entries[4 if len(entries) > 2 else 1]
-    #Remove non-alphabetic characters nd non-whitespace characters from text
-    #text = re.sub(r'[^a-zA-Z\s]+', '', text)
-    #Remove punctuation from text
-    for term in word_tokenize(text):
-      term.casefold() #lowercase, more aggressive that lower() (e.g. ß -> ss)
-      if term in punctuation:
-        text = text.replace(term, '')
-    #For each id, append a list of lists containing the text in articles
-    doc_tokens.append(text.split()) # split the text into words removing the whitespaces
-  return doc_tokens
+
+  docs_tokens = []
+
+  for line in txt_list:
+      # Split the text into chunks at the start of each tag
+      entries = re.split(marker_text, line)
+
+      # Save only entries included in .W tag
+      text_content = entries[4] if len(entries) > 2 else entries[1]
+
+      # Set to lowercase the terms in text and remove '-' from text to avoid words like 'non-linear' to be considered as a single word.
+      text_content = text_content.replace('-', ' ').casefold() # casefold is more aggressive that lower() (e.g. ß -> ss)
+
+      # Tokenize the text and remove non-alphabetical characters and empty strings and punctuation from tokens
+      tokens = [re.sub(r'[^a-z]', '', word) for word in word_tokenize(text_content) if word not in punctuation]
+      # Remove empty strings from tokens
+      tokens = list(filter(None, tokens))
+      docs_tokens.append(tokens)
+
+  return docs_tokens
 
 
 def import_relevance(PATH_TO_FILE):
@@ -98,7 +102,7 @@ def import_relevance(PATH_TO_FILE):
   for row in cran_np:
     if row[3] == 1:
       relevance[row[0]-1].add(row[2]-1) # -1 because the IDs for queries and docs start from 1
-    
+  
   return relevance
 
 
