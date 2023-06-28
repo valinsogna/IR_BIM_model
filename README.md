@@ -16,6 +16,16 @@ Evaluation of the effectiveness of the system is performed on a set of test quer
 The dataset used is the [Cranfield](http://ir.dcs.gla.ac.uk/resources/test_collections/cran/) which is a standard Information Retrieval text collection, consisting of 1400 documents (1.6 MB) from the aerodynamics field, in SGLM format. 
 The collection contains 225 queries with relevance feedback.
 
+## Structure
+
+The project is structured as follows:
+- `data` folder contains the dataset in original and preprocessed form.
+- `utils` folder contains the file `function.py` with the functions used in the project.
+- `bim.py` contains the implementation of the model bim.
+- `index.pkl` is the index built by the model bim in pickle format.
+- `run_all` bash script to run the entire project.
+- `test_model.ipynb` jupyter notebook to test the model.
+
 ## Run
 
 To import the dataset, preprocessing it and build the index, simply execute the bash script `run_all`:

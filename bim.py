@@ -189,7 +189,7 @@ class BIM_IRModel():
         print(f"The mean average precision is: {round(map/n,3)}")
 
     
-    def r_precision(self, query, relevance, print=True):
+    def r_precision(self, query, relevance, to_print=True):
         """
         This method calculates the R-precision given a 
         query and the set of relevant documents.
@@ -198,9 +198,10 @@ class BIM_IRModel():
         r=len(relevance)
         retrieved=set([self.rank[i][0] for i in range(r)])
         precision=len(retrieved.intersection(relevance))/len(retrieved)
-        if print:
+        if to_print==True:
             print(f"The R-precision is: {round(precision,3)}")
-        return precision
+        else:
+            return precision
 
 
     def mean_r_precision(self, elements, query_set, relevance_set):
