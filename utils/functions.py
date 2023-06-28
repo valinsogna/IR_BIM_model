@@ -4,9 +4,9 @@ import re
 # To use nltk, install databases on your machine
 import nltk
 #nltk.download('stopwords')
+#nltk.download('punkt')
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
-#nltk.download('punkt')
 from nltk.tokenize import word_tokenize
 import string
 
