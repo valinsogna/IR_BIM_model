@@ -34,7 +34,7 @@ To see the performance and usage of the index built, run the juptyer notebook `t
 - [NumPy](https://numpy.org/) for numerical operations.
 
  **Warning**
- To run bash script `run_all` enable downlaod of nltk packages in `function.py` file:
+ To run bash script `run_all` enable downlaod of nltk packages in `utils/functions.py` file at line 6,7:
  ```Python
  nltk.download('stopwords')
  nltk.download('punkt')
