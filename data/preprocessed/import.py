@@ -3,10 +3,10 @@ import numpy as np
 import re
 import pickle
 import string
-# To use nltk, install databases on your machine
-import nltk
-nltk.download('punkt')
-from nltk.tokenize import word_tokenize
+import sys
+# adding utils to the system path
+sys.path.insert(0, '../../utils')
+from functions import make_tokens
 
 PATH_TO_CRAN_TXT = '../cran/cran.all.1400'
 PATH_TO_CRAN_QRY = '../cran/cran.qry'
@@ -65,16 +65,8 @@ def get_text_only(txt_list, marker_text):
       # Save only entries included in .W tag
       text_content = entries[4] if len(entries) > 2 else entries[1]
 
-      # Set to lowercase the terms in text and remove '-' from text to avoid words like 'non-linear' to be considered as a single word.
-      text_content = text_content.replace('-', ' ').casefold() # casefold is more aggressive that lower() (e.g. ß -> ss)
-
-      # Tokenize the text and remove non-alphabetical characters and empty strings and punctuation from tokens
-      tokens = [re.sub(r'[^a-z]', '', word) for word in word_tokenize(text_content) if word not in punctuation]
-      # Remove empty strings and 1 and 2 characters strings from tokens usigna regex:
-      #tokens = [re.sub(r'^.{1,2}$', '', word) for word in tokens]
-      tokens = [re.sub(r'^.{1}$', '', word) for word in tokens]
-      #tokens = list(filter(None, tokens))
-      docs_tokens.append(tokens)
+      text_content = make_tokens(text_content)
+      docs_tokens.append(text_content)
 
   return docs_tokens
 

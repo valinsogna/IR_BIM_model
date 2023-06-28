@@ -3,10 +3,10 @@ from math import log
 import re
 # To use nltk, install databases on your machine
 import nltk
-nltk.download('stopwords')
+#nltk.download('stopwords')
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
-nltk.download('punkt')
+#nltk.download('punkt')
 from nltk.tokenize import word_tokenize
 import string
 
@@ -24,12 +24,14 @@ def stemming(list):
 
 def make_inverted_index(articles):
     """
-    This function builds an inverted index as an hash table (dictionary)
+    Creates and returns the inverted index from the articles as an hash table
     where the keys are the terms and the values are ordered lists of
     docIDs containing the term.
-    Before inserting the terms in the inverted index, it performs stemming.
+    It performs stemming, and stopword removal.
     """
     stops=set(stopwords.words('english'))
+    # Add some words to the stopwords set
+    stops.update(['isn', 'won', 're', 'll' ]) # s, t already in stopwords
     index = defaultdict(set) 
     for docid, article in enumerate(articles): 
         article=stemming(article)
@@ -44,13 +46,12 @@ def make_inverted_index(articles):
 
 def doc_frequency(index):
     """
-    This function computes the document frequency
-    for each term in the inverted index.
+    Calculates and returns the document frequency for each term in the inverted index.
     """
-    df={}
+    doc_frequency={}
     for term in index.keys():
-        df[term]=len(index[term])
-    return df
+        doc_frequency[term]=len(index[term])
+    return doc_frequency
 
 
 def inverse_doc_frequency_term(n,doc_frec_term):
@@ -62,7 +63,7 @@ def inverse_doc_frequency_term(n,doc_frec_term):
     return log(n/doc_frec_term)
 
 
-def make_list_query(query):
+def make_tokens(query):
     """
     Given a free-form text query, this function creates a list 
     containing all the terms present in the query as a string.
@@ -73,21 +74,17 @@ def make_list_query(query):
 
     # Tokenize the text and remove non-alphabetical characters and empty strings and punctuation from tokens
     tokens = [re.sub(r'[^a-z]', '', word) for word in word_tokenize(query) if word not in punctuation]
-    # Remove empty strings and 1 character strings from tokens usigna regex:
-    tokens = [re.sub(r'^.{1,2}$', '', word) for word in tokens]
-    list.append(tokens)
+    # Remove empty strings and 1 and 2 characters strings from tokens usigna regex:
+    #tokens = [re.sub(r'^.{1,2}$', '', word) for word in tokens]
+    #tokens = [re.sub(r'^.{1}$', '', word) for word in tokens]
+    tokens = list(filter(None, tokens))
+    return tokens
 
-    # query=re.sub(r'[^a-zA-Z\s]+', '',query)
-    # query = query.casefold()
-    # list=query.split()
-    return list
-
-
-def print_article(article):
+def print_txt(article):
     """
     Given a list of terms (eg. articles, queries) this 
     function prints the document, by joining the 
-    terms in the list.
+    terms in the list separating them by whitespaces.
     """
     article=" ".join(article)
     print(article)

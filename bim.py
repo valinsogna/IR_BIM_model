@@ -2,15 +2,14 @@ from math import log
 import pickle
 from utils.functions import *
 
-class BIM():
+class BIM_IRModel():
     """
-    In this section we create a class for the BIM probabilistic
-    information retrieval model. This class contains the attributes 
-    and the methods for the BIM model.
+    This class represents a BIM probabilistic
+    information retrieval model.
     """
     def __init__(self, articles):
         """
-        The class contains the following attributes:
+        Initializes the model with the given articles.
         """
         self.articles=articles
         self.index= make_inverted_index(self.articles)
@@ -25,33 +24,29 @@ class BIM():
 
     def compute_term_weights(self):
         """
-        This method computes the term-weight for each term 
-        in the inverted index and save them in a dictionary
-        in which the keys are the terms of the inverted index
-        and the values are the term-weights.
+        Computes the term weights for each term in the inverted index
+        based on the probabilities p and u, and saves them in a dictionary.
         """
         for term in self.index.keys():
-            pi=self.p[term]
-            ui=self.u[term]
-            self.term_weights[term]=log(pi/(1-pi))+log((1-ui)/ui)
+            pi = self.p[term]
+            ui = self.u[term]
+            self.term_weights[term] = log(pi / (1 - pi)) + log((1 - ui) / ui)
 
 
     def vr_term(self, term, relevance):
         """
-        This method calculates the number of relevant documents 
-        containing the term that has been given as input.
+        Calculates the number of relevant documents containing the given term.
         """
         count=0
         for docid in relevance:
-            if self.index[term].__contains__(docid):
-                count+=1
+            if docid in self.index.get(term, set()):
+                count += 1
         return count
 
     
     def update_p_u(self, relevance):
         """
-        This method updates the values of the probabilities
-        p and u for each  term in the inverted index. 
+        Updates the probabilities p and u for each term in the inverted index.
         """
         vr=len(relevance)
         for term in self.index.keys():
@@ -62,15 +57,12 @@ class BIM():
 
     def first_rsv_doc_query(self,docid): 
         """
-        This method calculates the RSV of a document.
-        It is used to calculate the RSV for the first time,
-        when we set p=0.5 and u=dfi/N. Indeed in this case,
-        the RSV is estimated to be sum of the inverse document 
-        frequency for each term present in both the query and article.
+        Calculates the RSV of a document for the first time,
+        when p=0.5 and u=dfi/N.
         """
         c=0
         for term in self.query:
-            if self.index.__contains__(term) and self.index[term].__contains__(docid):
+            if term in self.index and docid in self.index[term]:
                 c+=inverse_doc_frequency_term(self.N, self.df[term])
         return c
         
@@ -78,17 +70,21 @@ class BIM():
     def rsv_doc_query(self,query, docid):
         """
         This method calculates the RSV of a document given a query.
-        We preprocess the query by doing stemming before 
-        calculating the RSV.
+        We preprocess the query by doing stemming and stopwords removal.
         """
-        self.query=set(stemming(query))
+
+        stops=set(stopwords.words('english'))
+        # Add some words to the stopwords set
+        stops.update(['isn', 'won', 're', 'll' ]) # s, t already in stopwords
+        query=[word for word in query if word not in stops]
+        self.query = set(stemming(query))
 
         if len(self.term_weights)==0:
             rsv_doc=self.first_rsv_doc_query(docid)
         else:
             rsv_doc=0
             for term in self.query:
-                if self.index.__contains__(term) and self.index[term].__contains__(docid):
+                if term in self.index and docid in self.index[term]:
                     rsv_doc+=self.term_weights[term]
         return rsv_doc
     
@@ -102,7 +98,7 @@ class BIM():
         The list is ordered by descending RSV.
         """
         if type(query)==str:
-            query=make_list_query(query)
+            query=make_tokens(query)
 
         rank={}                 
         for i in range(self.N):
@@ -205,12 +201,25 @@ class BIM():
         precision=len(retrieved.intersection(relevance))/len(retrieved)
         print(f"The R-precision is: {round(precision,3)}")
 
+    def mean_r_precision(self, elements, query_set, relevance_set):
+        """
+        This method calculates the arithmetic mean of the R-precision values 
+        for an information retrieval system over a set of n query topics.
+        """
+        queries=get_list(elements, query_set)
+        relevance=get_list(elements, relevance_set)
+        n=len(queries)
+        r_precision=0
+        for i in range(n):
+            r_precision+=self.r_precision(queries[i],relevance[i])
+        print(f"The mean R-precision is: {round(r_precision/n,3)}")
+        
 
 
 with open("data/preprocessed/articles.pkl", "rb") as f:
     articles = pickle.load(f)
 
-bim=BIM(articles)
+bim=BIM_IRModel(articles)
 
 with open("./index.pkl",'wb') as f:
     pickle.dump(bim,f)
