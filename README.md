@@ -30,7 +30,7 @@ The project is structured as follows:
 
 To import the dataset, preprocessing it and build the index, simply execute the bash script `run_all`:
 ```bash 
-./run_all
+bash run_all.sh
 ```
 
 ## Results
