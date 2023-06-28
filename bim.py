@@ -175,7 +175,6 @@ class BIM_IRModel():
         pxr=[x*y for x,y in zip(precision_k, rel_k)]
         return gtp and (sum(pxr))/gtp or 0
     
-    
     def mean_average_precision(self, elements, query_set, relevance_set, k=10):
         """
         This method calculates the mean average precision of the BIM model
@@ -190,7 +189,7 @@ class BIM_IRModel():
         print(f"The mean average precision is: {round(map/n,3)}")
 
     
-    def r_precision(self, query, relevance):
+    def r_precision(self, query, relevance, print=True):
         """
         This method calculates the R-precision given a 
         query and the set of relevant documents.
@@ -199,7 +198,10 @@ class BIM_IRModel():
         r=len(relevance)
         retrieved=set([self.rank[i][0] for i in range(r)])
         precision=len(retrieved.intersection(relevance))/len(retrieved)
-        print(f"The R-precision is: {round(precision,3)}")
+        if print:
+            print(f"The R-precision is: {round(precision,3)}")
+        return precision
+
 
     def mean_r_precision(self, elements, query_set, relevance_set):
         """
@@ -211,13 +213,14 @@ class BIM_IRModel():
         n=len(queries)
         r_precision=0
         for i in range(n):
-            r_precision+=self.r_precision(queries[i],relevance[i])
+            r_precision+=self.r_precision(queries[i],relevance[i], False)
         print(f"The mean R-precision is: {round(r_precision/n,3)}")
-        
+
 
 
 with open("data/preprocessed/articles.pkl", "rb") as f:
     articles = pickle.load(f)
+
 
 bim=BIM_IRModel(articles)
 

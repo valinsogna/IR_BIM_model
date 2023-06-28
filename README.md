@@ -19,3 +19,5 @@ The collection contains 225 queries with relevance feedback.
 
 - [NLTK](https://www.nltk.org/) for text processing.
 - [NumPy](https://numpy.org/) for numerical operations.
+
+Attention: to run bash script `run_all` must download `nltk.download('stopwords')` packages 
