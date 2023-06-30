@@ -8,6 +8,7 @@ import sys
 sys.path.insert(0, '../../utils')
 from functions import make_tokens
 
+
 PATH_TO_CRAN_TXT = '../cran/cran.all.1400'
 PATH_TO_CRAN_QRY = '../cran/cran.qry'
 PATH_TO_CRAN_REL = '../cran/cranqrel_bin.txt'

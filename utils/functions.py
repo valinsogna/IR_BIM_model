@@ -9,6 +9,7 @@ from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 from nltk.tokenize import word_tokenize
 import string
+from unidecode import unidecode
 
 punctuation = set(string.punctuation)
 
@@ -71,7 +72,7 @@ def make_tokens(query):
 
     # Set to lowercase the terms in text and remove '-' from text to avoid words like 'non-linear' to be considered as a single word.
     query = query.replace('-', ' ').casefold() # casefold is more aggressive that lower() (e.g. ß -> ss)
-
+    query = unidecode(query) # remove accents and diacritics
     # Tokenize the text and remove non-alphabetical characters and empty strings and punctuation from tokens
     tokens = [re.sub(r'[^a-z]', '', word) for word in word_tokenize(query) if word not in punctuation]
     # Remove empty strings and 1 and 2 characters strings from tokens usigna regex:
