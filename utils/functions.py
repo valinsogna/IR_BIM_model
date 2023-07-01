@@ -88,6 +88,9 @@ def print_txt(article):
     terms in the list separating them by whitespaces.
     """
     article=" ".join(article)
+    # print article in rows of 80 characters
+    article = [article[i:i+80] for i in range(0, len(article), 80)]
+    article = "\n".join(article)
     print(article)
 
 

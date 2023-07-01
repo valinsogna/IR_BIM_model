@@ -113,6 +113,9 @@ class BIM_IRModel():
         RSV score of the k documents with highest RSV.
         """
         self.answer_query(query)
+        #Print self.query only if it is a free-form text query
+        if type(query)==str:
+            print(self.query)
         for i in range(k):
             print(f"Position: {i+1}, Doc id: {self.rank[i][0]}, RSV score: {round(self.rank[i][1], 3)}")
 
